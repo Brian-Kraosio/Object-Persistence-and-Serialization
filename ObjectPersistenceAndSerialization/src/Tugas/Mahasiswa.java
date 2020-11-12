@@ -20,9 +20,9 @@ import java.util.logging.Logger;
  * @author Asus
  */
 public class Mahasiswa implements java.io.Serializable{
-    String nim,nama,jurusan,prodi,ipk;
-    
-    
+    private String nim,nama,jurusan,prodi,ipk;
+
+
     public Mahasiswa(String nim, String nama, String jurusan, String prodi, String ipk) {
         this.nim = nim;
         this.nama = nama;

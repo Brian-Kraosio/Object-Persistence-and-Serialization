@@ -5,6 +5,7 @@
  */
 package Tugas;
 
+import java.util.List;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,9 +23,9 @@ import javax.swing.table.DefaultTableModel;
  * @author Asus
  */
 public class FrontEnd extends javax.swing.JFrame {
-    /**
-     * Creates new form FrontEnd
-     */
+    
+    private List<Mahasiswa> listMah;
+    
     public FrontEnd() {
         initComponents();
         dataResult();
@@ -169,6 +170,11 @@ public class FrontEnd extends javax.swing.JFrame {
         });
 
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -202,8 +208,8 @@ public class FrontEnd extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,10 +218,10 @@ public class FrontEnd extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(prodiField, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ipkfield, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(ipkfield, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -270,17 +276,19 @@ public class FrontEnd extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+//        if(){
         int no = tblMahasiswa.getRowCount() + 1;
         Mahasiswa mah = new Mahasiswa(NIMField.getText(), nameField.getText(), jurusanField.getText(), prodiField.getText(), ipkfield.getText());
-        Object[] row = new Object[]{no,mah.getNim(),mah.getNama(), mah.jurusan, mah.prodi, mah.ipk};
+        listMah.add(mah);
+        Object[] row = new Object[]{no,mah.getNim(),mah.getNama(), mah.getJurusan(), mah.getProdi(), mah.getIpk()};
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("mah.obj"));
-            oos.writeObject(mah);
+            oos.writeObject(listMah);
             oos.flush();
             oos.close();
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream("mah.obj"));
             try {
-                Mahasiswa mah1 = (Mahasiswa) ois.readObject();
+                List<Mahasiswa> list = (List<Mahasiswa>)ois.readObject();
                 ((DefaultTableModel) tblMahasiswa.getModel()).addRow(row);
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Mahasiswa.class.getName()).log(Level.SEVERE, null, ex);
@@ -289,7 +297,8 @@ public class FrontEnd extends javax.swing.JFrame {
             Logger.getLogger(Mahasiswa.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Mahasiswa.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }      
+//        }
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
@@ -305,14 +314,29 @@ public class FrontEnd extends javax.swing.JFrame {
     private void tblMahasiswaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMahasiswaMouseClicked
         DefaultTableModel model = (DefaultTableModel) tblMahasiswa.getModel();
         int row = tblMahasiswa.getSelectedRow();
-        int column = tblMahasiswa.getSelectedColumn();
+
+        Mahasiswa mah = listMah.get(row);
+        NIMField.setText(mah.getNim());
+        nameField.setText(mah.getNama());
+        jurusanField.setText(mah.getJurusan());
+        prodiField.setText(mah.getProdi());
+        ipkfield.setText(mah.getIpk());
         
-        NIMField.setText((String) tblMahasiswa.getValueAt(row, column));
-        nameField.setText((String) tblMahasiswa.getValueAt(row, column));
-        jurusanField.setText((String) tblMahasiswa.getValueAt(row, column));
-        prodiField.setText((String) tblMahasiswa.getValueAt(row, column));
-        ipkfield.setText((String) tblMahasiswa.getValueAt(row, column));
     }//GEN-LAST:event_tblMahasiswaMouseClicked
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblMahasiswa.getModel();
+        int row = tblMahasiswa.getSelectedRow();
+
+        Mahasiswa mah = listMah.get(row);
+        mah.setIpk(ipkfield.getText());
+        mah.setNama(nameField.getText());
+        mah.setJurusan(jurusanField.getText());
+        mah.setProdi(prodiField.getText());
+        mah.setIpk(ipkfield.getText());
+        
+        listMah.set(row, mah);
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
      * @param args the command line arguments
