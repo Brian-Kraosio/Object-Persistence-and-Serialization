@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrontEnd extends javax.swing.JFrame {
     
-    private List<Mahasiswa> listMah;
+    private List<Mahasiswa> listMah = new ArrayList<Mahasiswa>();
     
     public FrontEnd() {
         initComponents();
@@ -82,9 +82,20 @@ public class FrontEnd extends javax.swing.JFrame {
     }
     
     public void dataResult(){
-        
         String [] column = {"No", "NIM", "Nama", "Jurusan", "Prodi", "IPK"};
         tblMahasiswa.setModel(new DefaultTableModel(new Object[][]{}, column));
+        Object[] row = new Object[6];
+        int i = 1;
+        for(Mahasiswa mah : listMah){
+            row[0] = i++;
+            row[1] = mah.getNim();
+            row[2] = mah.getNama();
+            row[3] = mah.getJurusan();
+            row[4] = mah.getProdi();
+            row[5] = mah.getIpk();
+            
+            ((DefaultTableModel) tblMahasiswa.getModel()).addRow(row);
+        }
     }
 
     /**
@@ -280,7 +291,6 @@ public class FrontEnd extends javax.swing.JFrame {
         int no = tblMahasiswa.getRowCount() + 1;
         Mahasiswa mah = new Mahasiswa(NIMField.getText(), nameField.getText(), jurusanField.getText(), prodiField.getText(), ipkfield.getText());
         listMah.add(mah);
-        Object[] row = new Object[]{no,mah.getNim(),mah.getNama(), mah.getJurusan(), mah.getProdi(), mah.getIpk()};
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("mah.obj"));
             oos.writeObject(listMah);
@@ -289,7 +299,7 @@ public class FrontEnd extends javax.swing.JFrame {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream("mah.obj"));
             try {
                 List<Mahasiswa> list = (List<Mahasiswa>)ois.readObject();
-                ((DefaultTableModel) tblMahasiswa.getModel()).addRow(row);
+                dataResult();
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Mahasiswa.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -336,6 +346,7 @@ public class FrontEnd extends javax.swing.JFrame {
         mah.setIpk(ipkfield.getText());
         
         listMah.set(row, mah);
+        dataResult();
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
